@@ -6,8 +6,5 @@ app = Celery(
     backend="redis://redis:6379/0"
 )
 
-app.conf.update(
-    task_serializer="json",
-    accept_content=["json"],
-    result_serializer="json",
-)
+app.autodiscover_tasks()
+import tasks

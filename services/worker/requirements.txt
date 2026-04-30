@@ -1,3 +1,5 @@
 celery
 redis
-flower
+requests
+beautifulsoup4
+elasticsearch==8.13.0
