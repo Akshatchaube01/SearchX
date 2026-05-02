@@ -19,12 +19,33 @@ def root():
     return {"status": "ok"}
 
 @app.get("/search")
-def search(q: str):
+def search(q: str, size: int = 5):
     res = es.search(
         index="documents",
-        query={"match": {"content": q}}
+        query={
+            "match": {
+                "content": q
+            }
+        },
+        size=size
     )
-    return res
+
+    results = []
+
+    for hit in res["hits"]["hits"]:
+        source = hit["_source"]
+
+        results.append({
+            "url": source.get("url"),
+            "snippet": source.get("content", "")[:200],  # first 200 chars
+            "score": hit["_score"]
+        })
+
+    return {
+        "query": q,
+        "count": len(results),
+        "results": results
+    }
 
 @app.post("/crawl")
 def crawl(url: str):
