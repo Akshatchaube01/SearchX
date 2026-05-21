@@ -1,10 +1,8 @@
 from celery import Celery
 
-app = Celery(
+celery_app = Celery(
     "worker",
     broker="redis://redis:6379/0",
-    backend="redis://redis:6379/0"
+    backend="redis://redis:6379/0",
+    include=["tasks"] 
 )
-
-app.autodiscover_tasks()
-import tasks

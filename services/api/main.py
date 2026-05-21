@@ -24,7 +24,10 @@ def search(q: str, size: int = 5):
         index="documents",
         query={
             "match": {
-                "content": q
+                "content": {
+                    "query": q,
+                    "fuzziness": "AUTO"
+                }
             }
         },
         size=size

@@ -51,8 +51,12 @@ services:
     depends_on:
       - redis
       - elasticsearch
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     env_file:
       - .env
+    command: python -m celery -A celery_app worker --loglevel=info
 
 volumes:
   es_data:
