@@ -1,8 +1,26 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from elasticsearch import Elasticsearch
 from celery import Celery
 
 app = FastAPI()
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],  # Next.js frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Request models
+class CrawlRequest(BaseModel):
+    url: str
+
+class CrawlListRequest(BaseModel):
+    urls: list[str]
 
 # Elasticsearch
 es = Elasticsearch("http://es:9200")
@@ -51,6 +69,6 @@ def search(q: str, size: int = 5):
     }
 
 @app.post("/crawl")
-def crawl(url: str):
-    task = celery_app.send_task("tasks.crawl_and_index", args=[url])
-    return {"task_id": task.id}
+def crawl(request: CrawlRequest):
+    task = celery_app.send_task("tasks.crawl_and_index", args=[request.url])
+    return {"task_id": task.id, "status": "queued", "url": request.url}
