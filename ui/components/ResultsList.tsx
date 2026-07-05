@@ -55,7 +55,7 @@ export default function ResultsList({
                 rel="noopener noreferrer"
                 className="text-blue-700 no-underline hover:underline"
               >
-                {result.title}
+                {result.title || result.url || 'Untitled'}
               </a>
             </h3>
             <p className="m-0 mb-2 text-green-700 text-sm font-mono break-all">

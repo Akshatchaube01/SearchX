@@ -41,11 +41,15 @@ def search(q: str, size: int = 5):
     res = es.search(
         index="documents",
         query={
-            "match": {
-                "content": {
-                    "query": q,
-                    "fuzziness": "AUTO"
-                }
+            "multi_match": {
+                "query": q,
+                "fields": [
+                    "title^2.5",      # Boost title matches
+                    "content^1.0"     # Normal content weight
+                ],
+                "type": "best_fields",
+                "fuzziness": "AUTO",
+                "operator": "or"
             }
         },
         size=size
@@ -58,6 +62,7 @@ def search(q: str, size: int = 5):
 
         results.append({
             "url": source.get("url"),
+            "title": source.get("title") or source.get("url") or "Untitled",
             "snippet": source.get("content", "")[:200],  # first 200 chars
             "score": hit["_score"]
         })

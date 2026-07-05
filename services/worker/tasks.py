@@ -1,7 +1,7 @@
 from celery_app import celery_app
 
 from crawler.fetcher import fetch_page
-from crawler.cleaner import clean_html
+from crawler.cleaner import clean_html, extract_title
 from crawler.link_extractor import extract_links
 
 from search.elastic import index_document
@@ -27,9 +27,11 @@ def crawl_and_index(start_url, max_depth=2):
 
             html = fetch_page(url)
 
+            title = extract_title(html)
+
             text = clean_html(html)
 
-            index_document(url, text)
+            index_document(url, title, text)
 
             print(f"Indexed: {url}")
 
